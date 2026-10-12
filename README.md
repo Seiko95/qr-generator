@@ -3,7 +3,7 @@
 A free, private QR code and barcode generator that runs entirely in your browser and works offline.
 Install it as an app on **Linux**, **Windows 11** and **Android**.
 
-**Live app:** https://OWNER.github.io/qr-generator/
+**Live app:** https://seiko95.github.io/qr-generator/
 
 ## Features
 
