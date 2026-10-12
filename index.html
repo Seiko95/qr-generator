@@ -62,11 +62,11 @@
 
   .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
 
-  /* Type grid — mirrors the reference layout (5 columns x 3 rows). */
-  .types { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 6px; margin-bottom: 16px; }
+  /* Type grid — 12 types as 6 columns x 2 rows on wide screens. */
+  .types { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; padding: 4px; margin-bottom: 16px; }
   .types button {
     display: flex; align-items: center; justify-content: center; gap: 8px;
-    min-height: 48px; padding: 10px 8px;
+    min-height: 42px; padding: 8px 6px; white-space: nowrap;
     background: none; border: 2px solid transparent; border-radius: 10px;
     color: var(--text); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;
     transition: background .15s, border-color .15s;
@@ -165,13 +165,14 @@
   footer a { color: inherit; }
 
   @media (max-width: 920px) {
+    .types { grid-template-columns: repeat(4, 1fr); }
     .main { grid-template-columns: 1fr; }
     .side { position: static; }
     .preview .canvas-box { max-width: 360px; }
   }
   @media (max-width: 720px) {
     .types { grid-template-columns: repeat(3, 1fr); }
-    .types button { flex-direction: column; gap: 4px; font-size: 13px; min-height: 64px; }
+    .types button { flex-direction: column; gap: 4px; font-size: 13px; min-height: 60px; white-space: normal; }
     .types button svg { width: 20px; height: 20px; }
   }
   @media (max-width: 520px) {
