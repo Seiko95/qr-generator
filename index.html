@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>QR Code Generator</title>
+<meta name="description" content="Free, offline QR code and barcode generator: links, text, e-mail, call, SMS, vCard, WhatsApp, Wi-Fi, PDF, apps, images, video, social media, events and 2D barcodes.">
+<meta name="theme-color" content="#22b573">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+  :root {
+    --bg: #f3f6f9;
+    --card: #ffffff;
+    --text: #1f2a37;
+    --muted: #6b7684;
+    --line: #e3e8ee;
+    --accent: #22b573;
+    --accent-dark: #17935c;
+    --accent-soft: #e3f6ec;
+    --danger: #d64545;
+    --danger-soft: #fdecec;
+    --radius: 12px;
+    --shadow: 0 1px 3px rgba(16, 24, 40, .06), 0 1px 2px rgba(16, 24, 40, .04);
+    --field: #ffffff;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #12161c;
+      --card: #1b2129;
+      --text: #e6eaef;
+      --muted: #96a1ae;
+      --line: #2c3540;
+      --accent: #2cc883;
+      --accent-dark: #4fdc9c;
+      --accent-soft: #173326;
+      --danger: #f07070;
+      --danger-soft: #3a1d1d;
+      --field: #141a20;
+      --shadow: none;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Nunito", "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 20px 16px 48px; }
+  header.top { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  header.top svg { width: 36px; height: 36px; flex: none; }
+  header.top h1 { font-size: 22px; margin: 0; font-weight: 800; }
+  header.top p { margin: 0; color: var(--muted); font-size: 13px; }
+  #install { margin-left: auto; }
+
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+
+  /* Type grid — mirrors the reference layout (5 columns x 3 rows). */
+  .types { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; padding: 6px; margin-bottom: 16px; }
+  .types button {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 48px; padding: 10px 8px;
+    background: none; border: 2px solid transparent; border-radius: 10px;
+    color: var(--text); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;
+    transition: background .15s, border-color .15s;
+  }
+  .types button svg { width: 18px; height: 18px; flex: none; }
+  .types button:hover { background: var(--bg); }
+  .types button[aria-selected="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-dark); }
+  .types button:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+
+  .main { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 16px; align-items: start; }
+  .panel { padding: 20px; }
+  .panel h2 { margin: 0 0 4px; font-size: 18px; font-weight: 800; }
+  .panel .hint { margin: 0 0 16px; color: var(--muted); font-size: 13.5px; }
+
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 14px; }
+  .field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+  .field.full { grid-column: 1 / -1; }
+  .field[hidden] { display: none; }
+  .field label, .opt label.lbl { font-size: 13px; font-weight: 700; color: var(--muted); }
+  .field label .req { color: var(--danger); }
+  input[type=text], input[type=url], input[type=email], input[type=tel], input[type=password], input[type=number],
+  input[type=date], input[type=datetime-local], select, textarea {
+    width: 100%; padding: 10px 12px; font: inherit; color: var(--text);
+    background: var(--field); border: 1px solid var(--line); border-radius: 8px; outline: none;
+  }
+  textarea { min-height: 96px; resize: vertical; }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .check { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--text); cursor: pointer; }
+  .check input { width: 18px; height: 18px; accent-color: var(--accent); }
+  .pw { position: relative; }
+  .pw input { padding-right: 64px; }
+  .pw button { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); }
+  .field .sub { font-size: 12px; color: var(--muted); }
+
+  .error { margin-top: 14px; padding: 10px 12px; border-radius: 8px; background: var(--danger-soft); color: var(--danger); font-size: 14px; font-weight: 600; }
+  .error[hidden] { display: none; }
+
+  details.payload { margin-top: 16px; font-size: 13px; }
+  details.payload summary { cursor: pointer; color: var(--muted); font-weight: 700; }
+  details.payload pre { margin: 8px 0 0; padding: 10px; background: var(--bg); border-radius: 8px; white-space: pre-wrap; word-break: break-all; max-height: 180px; overflow: auto; }
+
+  /* Preview column */
+  .side { position: sticky; top: 16px; display: flex; flex-direction: column; gap: 16px; }
+  .preview { padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .canvas-box {
+    width: 100%; aspect-ratio: 1 / 1; display: grid; place-items: center;
+    background: repeating-conic-gradient(var(--bg) 0 25%, transparent 0 50%) 50% / 16px 16px;
+    border-radius: 10px; border: 1px dashed var(--line); overflow: hidden; position: relative;
+  }
+  .canvas-box canvas { max-width: 92%; max-height: 92%; image-rendering: pixelated; display: block; }
+  .canvas-box canvas.smooth { image-rendering: auto; }
+  .canvas-box .empty { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 24px; color: var(--muted); font-weight: 600; }
+  .canvas-box .empty[hidden] { display: none; }
+  .meta { font-size: 12.5px; color: var(--muted); text-align: center; min-height: 18px; }
+
+  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 10px 14px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--card); color: var(--text); font: inherit; font-weight: 700; cursor: pointer;
+  }
+  .btn svg { width: 16px; height: 16px; }
+  .btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-dark); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.primary:hover:not(:disabled) { background: var(--accent-dark); border-color: var(--accent-dark); color: #fff; }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+  .btn.small { padding: 5px 10px; font-size: 12.5px; }
+  .btn[hidden] { display: none; }
+
+  .options { padding: 18px 20px; }
+  .options h3 { margin: 0 0 12px; font-size: 15px; font-weight: 800; }
+  .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .opt { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+  .opt.full { grid-column: 1 / -1; }
+  .opt[hidden] { display: none; }
+  .color { display: flex; align-items: center; gap: 8px; padding: 4px 8px 4px 4px; border: 1px solid var(--line); border-radius: 8px; background: var(--field); }
+  .color input[type=color] { width: 34px; height: 30px; padding: 0; border: none; background: none; cursor: pointer; }
+  .color code { font-size: 13px; }
+  input[type=range] { width: 100%; accent-color: var(--accent); }
+  .seg { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .seg button { flex: 1; padding: 8px 4px; border: none; background: var(--field); color: var(--text); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .seg button + button { border-left: 1px solid var(--line); }
+  .seg button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent-dark); }
+  .logo-row { display: flex; gap: 8px; align-items: center; }
+  .logo-row img { width: 34px; height: 34px; object-fit: contain; border-radius: 6px; border: 1px solid var(--line); background: #fff; }
+  .warn { font-size: 12.5px; color: #b7791f; font-weight: 600; }
+  .warn[hidden] { display: none; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px);
+    background: var(--text); color: var(--card); padding: 10px 16px; border-radius: 8px; font-weight: 700;
+    opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 10; max-width: calc(100% - 32px);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  footer { margin-top: 28px; text-align: center; color: var(--muted); font-size: 12.5px; }
+  footer a { color: inherit; }
+
+  @media (max-width: 920px) {
+    .main { grid-template-columns: 1fr; }
+    .side { position: static; }
+    .preview .canvas-box { max-width: 360px; }
+  }
+  @media (max-width: 720px) {
+    .types { grid-template-columns: repeat(3, 1fr); }
+    .types button { flex-direction: column; gap: 4px; font-size: 13px; min-height: 64px; }
+    .types button svg { width: 20px; height: 20px; }
+  }
+  @media (max-width: 520px) {
+    .wrap { padding: 14px 12px 40px; }
+    .fields { grid-template-columns: 1fr; }
+    .panel, .options, .preview { padding: 16px; }
+    header.top h1 { font-size: 19px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <svg viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="11" fill="#22b573"/><g fill="#fff"><path d="M10 10h12v12H10zm3 3v6h6v-6z"/><path d="M26 10h12v12H26zm3 3v6h6v-6z"/><path d="M10 26h12v12H10zm3 3v6h6v-6z"/><path d="M15 15h2v2h-2zM31 15h2v2h-2zM15 31h2v2h-2zM26 26h4v4h-4zM34 26h4v4h-4zM30 30h4v4h-4zM26 34h4v4h-4zM34 34h4v4h-4z"/></g></svg>
+    <div>
+      <h1>QR Code Generator</h1>
+      <p>Free, private &amp; works offline: nothing leaves your device.</p>
+    </div>
+    <button class="btn small" id="install" hidden>Install app</button>
+  </header>
+
+  <nav class="card types" role="tablist" aria-label="QR code type" id="types"></nav>
+
+  <div class="main">
+    <section class="card panel" aria-live="polite">
+      <h2 id="formTitle"></h2>
+      <p class="hint" id="formHint"></p>
+      <form class="fields" id="form" autocomplete="off" onsubmit="return false"></form>
+      <div class="error" id="error" role="alert" hidden></div>
+      <details class="payload" id="payloadBox" hidden>
+        <summary>Encoded content</summary>
+        <pre id="payload"></pre>
+      </details>
+    </section>
+
+    <aside class="side">
+      <section class="card preview">
+        <div class="canvas-box">
+          <canvas id="canvas" width="300" height="300" aria-label="Generated code preview"></canvas>
+          <div class="empty" id="empty">Fill in the form to see your code.</div>
+        </div>
+        <div class="meta" id="meta"></div>
+        <div class="actions">
+          <button class="btn primary" id="dlPng" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 21h16"/></svg>PNG</button>
+          <button class="btn primary" id="dlSvg" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 21h16"/></svg>SVG</button>
+          <button class="btn" id="copy" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1"/></svg>Copy</button>
+          <button class="btn" id="share" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>Share</button>
+        </div>
+      </section>
+
+      <section class="card options">
+        <h3>Design</h3>
+        <div class="opts">
+          <div class="opt">
+            <label class="lbl" for="fg">Foreground</label>
+            <div class="color"><input type="color" id="fg" value="#000000"><code id="fgCode">#000000</code></div>
+          </div>
+          <div class="opt">
+            <label class="lbl" for="bg">Background</label>
+            <div class="color"><input type="color" id="bg" value="#ffffff"><code id="bgCode">#ffffff</code></div>
+          </div>
+          <div class="opt full warn" id="contrastWarn" hidden>Low contrast: some phones may not scan this. Keep the foreground darker than the background.</div>
+          <div class="opt full" id="optStyle">
+            <span class="lbl" style="font-size:13px;font-weight:700;color:var(--muted)">Style</span>
+            <div class="seg" id="style" role="group" aria-label="Module style">
+              <button type="button" data-v="square" aria-pressed="true">Square</button>
+              <button type="button" data-v="rounded" aria-pressed="false">Rounded</button>
+              <button type="button" data-v="dots" aria-pressed="false">Dots</button>
+            </div>
+          </div>
+          <div class="opt full" id="optEcc">
+            <span class="lbl" style="font-size:13px;font-weight:700;color:var(--muted)">Error correction</span>
+            <div class="seg" id="ecc" role="group" aria-label="Error correction level">
+              <button type="button" data-v="L" aria-pressed="false" title="Recovers 7% damage">L 7%</button>
+              <button type="button" data-v="M" aria-pressed="true" title="Recovers 15% damage">M 15%</button>
+              <button type="button" data-v="Q" aria-pressed="false" title="Recovers 25% damage">Q 25%</button>
+              <button type="button" data-v="H" aria-pressed="false" title="Recovers 30% damage">H 30%</button>
+            </div>
+          </div>
+          <div class="opt full">
+            <label class="lbl" for="size">Export size: <span id="sizeVal">1024</span> px</label>
+            <input type="range" id="size" min="256" max="2048" step="64" value="1024">
+          </div>
+          <div class="opt full">
+            <label class="lbl" for="margin">Quiet zone (margin): <span id="marginVal">4</span> modules</label>
+            <input type="range" id="margin" min="0" max="10" step="1" value="4">
+          </div>
+          <div class="opt full" id="optText" hidden>
+            <label class="check"><input type="checkbox" id="showText" checked> Show human-readable text (linear barcodes)</label>
+          </div>
+          <div class="opt full" id="optLogo">
+            <span class="lbl" style="font-size:13px;font-weight:700;color:var(--muted)">Center logo</span>
+            <div class="logo-row">
+              <img id="logoPreview" alt="" hidden>
+              <label class="btn small" for="logo" style="cursor:pointer">Choose image…</label>
+              <input type="file" id="logo" accept="image/*" hidden>
+              <button type="button" class="btn small" id="logoClear" hidden>Remove</button>
+            </div>
+            <span class="field"><span class="sub">A logo forces error correction to H so the code stays readable.</span></span>
+          </div>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <footer>
+    Generated entirely in your browser. QR Code is a registered trademark of DENSO WAVE INCORPORATED.
+  </footer>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="lib/qrcode.js"></script>
+<script src="js/payloads.js"></script>
+<script src="js/app.js"></script>
+<script>
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  }
+</script>
+</body>
+</html>
