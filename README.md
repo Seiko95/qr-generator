@@ -11,7 +11,7 @@ Install it as an app on **Linux**, **Windows 11** and **Android**.
 
 | Type | What the code does when scanned |
 |---|---|
-| Link | Opens a website |
+| Link | Opens any link: website, YouTube video, PDF or photo shared online… |
 | Text | Shows a text message |
 | E-mail | Opens a new e-mail with recipient, subject and body |
 | Call | Dials a phone number |
@@ -19,10 +19,7 @@ Install it as an app on **Linux**, **Windows 11** and **Android**.
 | V-card | Saves a contact (name, phones, e-mail, company, address…) |
 | WhatsApp | Opens a WhatsApp chat, with an optional message |
 | Wi-Fi | Joins a Wi-Fi network (WPA/WEP/open, hidden networks) |
-| PDF | Opens a PDF hosted online (Drive, Dropbox, your site…) |
-| App | Opens an app in Google Play, the App Store, or any download link |
-| Images | Opens a photo or album hosted online |
-| Video | Plays a YouTube / Vimeo / TikTok / Drive video |
+| App | Opens an app in Google Play or the App Store (from a package name / app ID or store link) |
 | Social Media | Opens a profile on Instagram, Facebook, X, TikTok, LinkedIn, YouTube, GitHub… |
 | Event | Adds an event to the calendar (timed or all-day) |
 | 2D Barcode | Data Matrix, PDF417, Aztec, plus Code 128, Code 39, EAN-13, EAN-8, UPC-A |
@@ -30,8 +27,8 @@ Install it as an app on **Linux**, **Windows 11** and **Android**.
 Design options: colors, square / rounded / dot style, error correction level, center logo,
 quiet zone, and export size. Export as **PNG** or **SVG**, copy to the clipboard, or share (Android).
 
-PDF, images, videos and apps are too big to fit inside a QR code. Upload the file somewhere
-(Google Drive, Dropbox, YouTube…), set it to "anyone with the link", and paste the link.
+Files (PDF, images, videos) are too big to fit inside a QR code: upload them somewhere
+(Google Drive, Dropbox, YouTube…), set them to "anyone with the link", and use the **Link** type.
 
 ## Install
 

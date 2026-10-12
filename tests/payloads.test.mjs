@@ -53,16 +53,9 @@ test('wifi escapes and handles modes', () => {
   assert.ok(b.wifi({ ssid: 'X', password: 'short', encryption: 'WPA' }).error);
 });
 
-test('file types are URL based', () => {
-  assert.equal(b.pdf({ url: 'drive.google.com/file/d/1' }).data, 'https://drive.google.com/file/d/1');
-  assert.equal(b.video({ url: 'https://youtu.be/abc' }).data, 'https://youtu.be/abc');
-  assert.equal(b.images({ url: 'https://imgur.com/a/x' }).data, 'https://imgur.com/a/x');
-});
-
 test('app handles package ids and store links', () => {
   assert.equal(b.app({ store: 'play', value: 'com.whatsapp' }).data, 'https://play.google.com/store/apps/details?id=com.whatsapp');
   assert.equal(b.app({ store: 'appstore', value: '310633997' }).data, 'https://apps.apple.com/app/id310633997');
-  assert.equal(b.app({ store: 'other', value: 'example.com/app.apk' }).data, 'https://example.com/app.apk');
 });
 
 test('social builds profile URLs', () => {

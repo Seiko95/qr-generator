@@ -181,17 +181,6 @@
       return ok(s + ';');
     },
 
-    pdf(f) {
-      return urlPayload(f.url, 'link to the PDF');
-    },
-
-    images(f) {
-      return urlPayload(f.url, 'link to the image or gallery');
-    },
-
-    video(f) {
-      return urlPayload(f.url, 'link to the video');
-    },
 
     app(f) {
       const store = f.store || 'play';
@@ -203,12 +192,9 @@
         }
         return urlPayload(v, 'Play Store link');
       }
-      if (store === 'appstore') {
-        if (!v) return fail('Enter the App Store link (apps.apple.com/...).');
-        if (/^\d{6,}$/.test(v)) return ok('https://apps.apple.com/app/id' + v);
-        return urlPayload(v, 'App Store link');
-      }
-      return urlPayload(v, 'app download link');
+      if (!v) return fail('Enter the App Store link (apps.apple.com/...).');
+      if (/^\d{6,}$/.test(v)) return ok('https://apps.apple.com/app/id' + v);
+      return urlPayload(v, 'App Store link');
     },
 
     social(f) {
