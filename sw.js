@@ -1,5 +1,5 @@
 // Offline support: pre-cache the app shell, serve cache-first, refresh in the background.
-const CACHE = 'qrgen-v3';
+const CACHE = 'qrgen-v4';
 const ASSETS = [
   './',
   'index.html',

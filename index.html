@@ -290,6 +290,13 @@
 <script>
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+    // When a new version takes over, reload once so the update shows immediately.
+    if (navigator.serviceWorker.controller) {
+      let reloaded = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!reloaded) { reloaded = true; location.reload(); }
+      });
+    }
   }
 </script>
 </body>
