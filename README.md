@@ -3,6 +3,8 @@
 A free, private QR code and barcode generator that runs entirely in your browser and works offline.
 Install it as an app on **Linux**, **Windows 11** and **Android**.
 
+> 🤖 This app was vibe-coded with [Claude](https://claude.com/claude-code) (Anthropic's AI) using Claude Code.
+
 **Live app:** https://seiko95.github.io/qr-generator/
 
 ## Features
